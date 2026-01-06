@@ -35,9 +35,9 @@
             </ul>
         </div>
         <div class="col-lg-9">
-            <div class="d-flex justify-content-between">
-                <h3>Category List
-                    <a href="create-category.php" class="btn btn-primary">Create Category</a></h3>
+            <div class="d-flex justify-content-between align-items-center mb-3 mt-3">
+                <h3>Category List</h3>
+                    <a href="create-category.php" class="btn btn-primary">Create Category</a>
             </div>
             <table class="table table-bordered">
                 <thead>
@@ -54,8 +54,8 @@
                             <td><?= $i++?></td>
                             <td><?=  $category['name']?></td>
                             <td><?=  $category['slug']?></td>
-                            <td><a href="edit-category.php?id= <?=$category['ID'] ?> " class="btn btn-primary">Edit</a>
-                                    <a href="delete-category.php?id= <?=$category['ID'] ?>" class="btn btn-danger">Delete</a>
+                            <td class="w-25"><a href="edit-category.php?id= <?=$category['ID'] ?> " class="btn btn-primary " >Edit</a>
+                                    <a href="delete-category.php?id=<?=$category['ID'] ?>" class="btn btn-danger" >Delete</a>
                                 </td>
                         </tr>
                     <?php } ?>

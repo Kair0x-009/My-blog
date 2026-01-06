@@ -62,7 +62,7 @@
                 <?php } ?>
             <div class="card mt-3">
                 <div class="card-body">
-                    <form action="edit-category.php?id=<?=$categories['ID'] ?>" method="post">
+                    <form action="edit-category.php?id=<?=$category['ID'] ?>" method="post">
                         <div class="mb-3">
                             <label for="name">Name</label>
                             <input type="text" name="name" id="" class="form-control" value="<?= $category['name'] ?>">
