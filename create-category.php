@@ -5,23 +5,41 @@
         header("Location: login.php");
     }
 
-   if(isset($_POST['save'])){
-        $name = $_POST['name'];
-        $slug = $_POST['slug'];
+if (isset($_POST['save'])) {
 
-        if (empty($name)&&empty($slug)) {
-            $message = 'All fields Required';
-            $msgType = 'danger';
-        }else{
-            $sql = "INSERT INTO categories (name, slug) VALUES ('$name', '$slug')";
+    $name  = $_POST['name'];
+    $slug  = $_POST['slug'];
 
-            if(mysqli_query($conn,$sql)===TRUE){
-                $message = 'Categories Created Succesfully';
-            $msgType = 'success';
+    if (empty($name) || empty($slug) || $_FILES['image']['error'] == 4) {
+        $message = "All Fields Required";
+        $msgType = 'danger';
+    } else {
+
+        // IMAGE UPLOAD
+        $imageName = time() . "_" . basename($_FILES['image']['name']);
+        $target_dir = "uploads/category/";
+        $target_file = $target_dir . $imageName;
+
+        if (move_uploaded_file($_FILES['image']['tmp_name'], $target_file)) {
+
+            $sql = "INSERT INTO categories (name, slug, img)
+                    VALUES ('$name', '$slug', '$imageName')";
+
+            if (mysqli_query($conn, $sql) === TRUE) {
+                $message = "Category Created Successfully.";
+                $msgType = 'success';
+            } else {
+                $message = "Database Error";
+                $msgType = 'danger';
             }
+        } else {
+            $message = "Image upload failed";
+            $msgType = 'danger';
         }
     }
-
+}
+// Close DB connection
+$conn->close();
 ?>
 <html lang="en">
 <head>
@@ -38,16 +56,7 @@
 
  <div class="container my-5">
     <div class="row">
-        <div class="col-lg-3">
-            <ul class="list-group">
-                <a href="dashboard.php" class="list-group-item list-group-item-action">Dashboard</a>
-                <a href="list-category.php" class="list-group-item list-group-item-action active">Categories</a>
-                <a href="" class="list-group-item list-group-item-action">Posts</a>
-                <a href="" class="list-group-item list-group-item-action">Users</a>
-                <a href="" class="list-group-item list-group-item-action">Comments</a>
-                <a href="logout.php" class="list-group-item list-group-item-action">Logout</a>
-            </ul>
-        </div>
+        <?php include 'include/sidebar.php'; ?>
         <div class="col-lg-9">
             <a href="list-category.php" class="btn btn-primary">All Category</a>
             <?php if(!empty($message)){?>
@@ -57,7 +66,7 @@
                 <?php } ?>
             <div class="card mt-3">
                 <div class="card-body">
-                    <form action="create-category.php" method="post">
+                    <form action="create-category.php" method="post" enctype="multipart/form-data">
                         <div class="mb-3">
                             <label for="name">Name</label>
                             <input type="text" name="name" id="" class="form-control">
