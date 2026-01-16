@@ -5,7 +5,7 @@ require 'connection.php';
 $postSlug = $_GET['slug'];
 
 // Fetch Single blog posts
-$sql = "SELECT p.id, p.title, p.slug, p.image, p.content, p.created_at, u.full_name AS author
+$sql = "SELECT p.id,p.user_id, p.title, p.slug, p.image, p.content, p.created_at, u.full_name AS author
         FROM post p
         JOIN users u ON p.user_id = u.user_id
         WHERE p.status = 1 AND p.slug = '$postSlug'";
@@ -17,7 +17,36 @@ exit;
 }
 
 $post = mysqli_fetch_assoc($result);
+$postID = $post['id'];
+$row_count;
 
+
+    $createdAt = date('Y-m-d H:i:s');
+    
+if(isset($_POST['save_comment'])){
+        $comment = $_POST['comment'];
+    $userID = $_SESSION['userId'];
+    if(empty($comment)){
+        $message = "Comment is required";
+        $msgType = "danger";
+    }else{
+        $sql = "INSERT INTO comments (comment , user_id , post_id ,created_at ) VALUES ('$comment' , '$userID' ,'$postID' ,'$createdAt ')";
+        if (mysqli_query($conn, $sql)=== TRUE) {
+            $message = "Comment Successful";
+        $msgType = "success";
+        }
+    }
+
+}
+$sql = "SELECT c.id, c.comment, c.user_id , c.created_at, c.post_id, u.full_name AS author
+        FROM comments c
+        JOIN users u ON c.user_id = u.user_id
+        WHERE c.post_id = '$postID'";
+$cmtResult = mysqli_query($conn, $sql);
+if(mysqli_num_rows($cmtResult)==0){
+echo "No comments found";
+exit;
+}
 
 ?>
 
@@ -74,12 +103,44 @@ $post = mysqli_fetch_assoc($result);
             </p>
             <hr>
             <div class="mt-3">
+
                 <h5>
                     Comments
                 </h5>
+                
+                <?php if (!empty($message)) { ?>
+                    <div class="alert alert-<?= $msgType ?>">
+                        <?= $message ?>
+                    </div>
+                <?php } ?>
                 <form action="" method="post">
                     <textarea name="comment" id="" rows="5" placeholder="Your comment goes here..." class="form-control"></textarea>
-            <button class="btn btn-primary mt-1"type="submit">Post Comment</button></form>
+            <button class="btn btn-primary mt-1" name ="save_comment" type="submit">Post Comment</button></form>
+            </div>
+            <div class="mt-4">
+                <?php
+                if (mysqli_num_rows($cmtResult)>0) {
+                    while ($comment = mysqli_fetch_assoc($cmtResult)) {?>
+                      <div class="p-3 border mb-3">
+                        <p>
+                            <span>
+                            
+                                  <?= $comment['author']?>
+                               
+                            </span>
+                            ||
+                            <span>
+                                <?= $comment['created_at'] ?>
+                            </span>
+                            
+                        </p>
+                        <p>
+                            <span><?= $comment['comment'] ?></span>
+                        </p>
+                      </div>
+                 <?php   }
+                }
+                ?>
             </div>
 
         </div>
