@@ -122,8 +122,9 @@ exit;
                 if (mysqli_num_rows($cmtResult)>0) {
                     while ($comment = mysqli_fetch_assoc($cmtResult)) {?>
                       <div class="p-3 border mb-3">
-                        <p>
-                            <span>
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <span>
                             
                                   <?= $comment['author']?>
                                
@@ -132,8 +133,12 @@ exit;
                             <span>
                                 <?= $comment['created_at'] ?>
                             </span>
+                            </div>
+                            <?php if ($_SESSION['userId'] == $comment['user_id']) { ?>
+                                <a href="delete-comment.php?id=<?= $comment['id'] ?>" class='btn btn-danger btn-sm'>Delete</a>
+                           <?php }?>
                             
-                        </p>
+                        </div>
                         <p>
                             <span><?= $comment['comment'] ?></span>
                         </p>
