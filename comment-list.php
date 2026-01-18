@@ -6,9 +6,9 @@ if (!isset($_SESSION['isLogin']) == true) {
     exit;
 }
 
-
-
-$sql = "SELECT * FROM users ORDER BY user_id DESC";
+$sql = "SELECT c.id, c.comment, c.user_id, c.created_at, u.Full_name AS author
+        FROM comments c
+        JOIN users u ON c.user_id = u.user_id";
 $results = mysqli_query($conn, $sql);
 
 // Close DB connection
@@ -21,7 +21,7 @@ $conn->close();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Posts</title>
+    <title>Comments</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 
@@ -34,50 +34,31 @@ $conn->close();
             <?php include 'include/sidebar.php';   ?>
             <div class="col-lg-9">
                 <div class="d-flex align-items-center justify-content-between mb-4">
-                    <h3>Users List</h3>
+                    <h3>Comment List</h3>
                 </div>
                 <table class="table table-bordered">
                     <thead>
                         <tr>
                             <th scope="col">#</th>
-                            <th scope="col">Full Name</th>
-                            <th scope="col">Email</th>
-                            <th scope="col">Phone</th>
-                            <th scope="col">Status</th>
-                            <th scope="col">Action</th>
+                            <th scope="col">User</th>
+                            <th scope="col">Comment</th>
+                            <th scope="col">CreatdAt</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php
                         if (mysqli_num_rows($results) > 0) {
                             $i = 1;
-                            while ($user = mysqli_fetch_assoc($results)) {
+                            while ($comment = mysqli_fetch_assoc($results)) {
 
                         ?>
                                 <tr>
                                     <th scope="row"><?= $i++ ?></th>
                                     <td>
-                                        <?= $user['Full_name'] ?>
+                                        <?= $comment['author'] ?>
                                     </td>
-                                    <td><?= $user['email'] ?></td>
-                                    <td><?= $user['phone'] ?></td>
-                                    <td>
-                                        <?php 
-                                        
-                                        if($user['status'] ){
-                                            echo "<button class='btn btn-success'>Active</button>";
-                                        }else {
-                                            echo "<button class='btn btn-danger'>Inactive</button>";
-                                        }
-                                        ?>
-                                        
-                                        
-                                    </td>
-                                    <td>
-                                        <?php if($_SESSION['userId'] != $user['user_id']){ ?>
-                                          <a href="delete-user.php?id=<?= $user['user_id'] ?>" class='btn btn-danger'>Delete</a>  
-                                       <?php } ?>
-                                    </td>
+                                    <td><?= $comment['comment'] ?>
+                                    <td><?= $comment['created_at'] ?>
                                 </tr>
                         <?php }
                         } ?>
